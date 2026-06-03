@@ -1,0 +1,91 @@
+rocky:
+  version: "0.1.0"
+
+  engine:
+    provider: "groq"               # §R.16: 'groq' (default, WSL-friendly) or 'ollama' (local fallback)
+    mode: "auto"                   # Mode for local fallback auto-detection
+    kv_cache_type: "q8_0"
+    default_num_ctx: 8192
+    ram_disk_path: "/dev/shm/rocky" # §R.16: Linux native tmpfs RAM disk (WSL-compatible, no drivers needed)
+    thermal_threshold_c: 83
+    thermal_pause_seconds: 3
+    circuit_breaker_recovery_s: 300
+
+  groq:                            # §R.16: Groq API settings
+    host: "https://api.groq.com/openai/v1"
+    timeout: 30
+    models:
+      supervisor: "llama-3.1-8b-instant"
+      coder: "llama-3.1-8b-instant"
+      reasoner: "llama-3.3-70b-versatile"
+      writer: "llama-3.3-70b-versatile"
+
+  ollama:                          # Local fallback server configuration
+    host: "http://localhost:11434"
+    timeout: 120
+    models:
+      supervisor: "gemma3:4b"
+      coder: "qwen3:8b"
+      reasoner: "deepseek-r1:14b"
+      writer: "gemma3:12b"
+
+    hardware_profiles:             # Used when falling back to local Ollama
+      minimal:                     # 8GB VRAM
+        models: ["gemma3:4b", "qwen3:8b"]
+        reasoner_override: "deepseek-r1:8b"
+        mode: "hot_swap"
+        quantization: "Q4_K_M"
+      standard:                    # 16GB VRAM
+        models: ["gemma3:4b", "qwen3:8b", "deepseek-r1:8b"]
+        mode: "partial_resident"
+        quantization: "Q4_K_M"
+      full:                        # 24GB+ VRAM
+        models: ["gemma3:4b", "qwen3:8b", "deepseek-r1:14b"]
+        mode: "parallel"
+        quantization: "Q4_K_M"
+
+  memory:
+    root: ".memory"
+    session_ttl_hours: 72
+    warm_ttl_days: 7
+    max_lines_per_file: 200
+    max_memory_file_size_kb: 50
+
+  skills:
+    root: "skills"
+    staging_dir: "skills/staging"
+    archive_dir: "skills/archive"
+    max_active_skills: 50
+    max_dispatch_rules: 30
+    dispatch_version_file: ".memory/.dispatch_version"
+
+  hermes:
+    enabled: true
+    reflection_model: "llama-3.3-70b-versatile" # Uses Groq reasoning model
+    auto_commit: true
+    commit_prefix: "autolearn"
+    max_retries: 2
+
+  safety:
+    max_tool_calls_per_turn: 10
+    risk_levels:
+      safe: ["read_file", "list_directory", "search_files"]
+      reversible: ["write_file", "edit_file", "execute_python"]
+      irreversible: ["run_command", "file_delete", "web_request"]
+    blocked_paths:
+      - "C:\\Windows"
+      - "C:\\Program Files"
+      - "/etc"                      # §R.16: WSL block list
+      - "/usr/bin"
+      - "/bin"
+
+  capability_ceiling:
+    optimized_for:
+      - "high-speed code generation via Groq API"
+      - "WSL command-line automation"
+      - "structured data tasks"
+      - "outcome-anchored self-learning"
+    not_optimized_for:
+      - "low-latency local GPU operations without API key"
+      - "tasks requiring >128K context window"
+      - "complex graphical user interface generation"
