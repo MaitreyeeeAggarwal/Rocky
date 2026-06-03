@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Rocky — Free, Local-First Multi-Agent System on WSL with Groq API
 
 Rocky is a highly optimized, outcome-anchored multi-agent system designed to run on consumer hardware with commercial-grade speed. By pairing **Windows Subsystem for Linux (WSL)** with the **Groq API** and local **Ollama** fallbacks, Rocky avoids the cognitive bottlenecks and slow swap latencies of local weights.
@@ -47,3 +48,6 @@ Rocky is a highly optimized, outcome-anchored multi-agent system designed to run
 | `/skills` | List validated and staging skills |
 | `/undo` | Show UNDO_LOG.md and rollback hints |
 | `/end-session` | Trigger self-reflection learning loops and commit changes to Git |
+=======
+# Rocky
+>>>>>>> 058055843dd101ccd3cf24d1fd0f22cddabeaa3a
